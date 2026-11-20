@@ -149,6 +149,7 @@
     for (const id of ["deck", "deckActions", "tableActions", "game", "together", "sigBox"]) $("#" + id).hidden = true;
     $("#layout").innerHTML = "";
     $("#readings").innerHTML = "";
+    if (journal) journal.hide();
     table.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
 
     let base = state.kind === "cal" && state.cal === "months" ? COURTS : state.deck32 ? DECK32 : DECK52;
@@ -304,6 +305,7 @@
     if (state.flipped.size === state.spread.count) {
       setStatus("모든 카드를 뒤집었습니다. 아래 풀이를 읽어 보세요.");
       renderTogether();
+      if (journal) journal.show();
     } else {
       setStatus(`${state.spread.count - state.flipped.size}장 남았습니다.`);
     }
@@ -986,6 +988,20 @@
     $("#dialogClose").addEventListener("click", () => dlg.close());
     dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   }
+
+  /* ── 리딩 일지에 저장 (허브의 journal-box.js를 못 불러오면 아무것도 하지 않는다) ── */
+  /* 배열 리딩만 저장한다. 1년 달력과 몬테카를로·피라미드는 카드 목록이 아닌 결과라 저장 상자를 띄우지 않는다.
+   * 대표 카드를 골랐으면 맨 앞에 '대표 카드 · 나'로 남긴다. 트럼프는 방향이 없다(null) */
+  var journal = window.MoonHongJournal && window.MoonHongJournal.box ? window.MoonHongJournal.box({
+    deck: "트럼프 카드", deckId: "trump", after: $("#readings"),
+    read: () => {
+      const sp = state.spread;
+      if (state.kind !== "spread" || !sp || state.flipped.size < sp.count) return null;
+      const cards = state.picks.map((id, n) => ({ name: CARDS[id].name, position: sp.slots[n].name, orientation: null }));
+      if (state.sig) cards.unshift({ name: CARDS[state.sig].name, position: "대표 카드 · 나", orientation: null });
+      return { spread: sp.name + (state.deck32 ? " · 32장" : ""), question: state.question, cards };
+    },
+  }) : null;
 
   renderSetup();
   renderLibrary();
