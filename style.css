@@ -338,6 +338,7 @@ h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.3; t
 .cautions { list-style: none; margin: 0; padding: 20px 24px; border: 1px solid var(--line); border-radius: 6px; display: flex; flex-direction: column; gap: 8px; font-size: .93rem; color: var(--mist); }
 .cautions strong { color: var(--paper); margin-right: 8px; }
 .about-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 32px; margin-bottom: 28px; }
+.about-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; }
 .about-grid h3 { margin: 0 0 8px; font-size: 1.1rem; }
 .about-grid p { margin: 0 0 8px; color: var(--mist); font-size: .95rem; }
 
@@ -351,10 +352,61 @@ h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.3; t
 .dialog-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; }
 .dialog-card { aspect-ratio: var(--card); border-radius: 10px; overflow: hidden; box-shadow: 0 10px 26px rgba(0, 0, 0, .5); align-self: start; }
 
+
+/* ── 덱 옵션 · 대표 카드 · 달력 ───────── */
+.toggles { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+.select { display: inline-flex; gap: 10px; align-items: center; color: var(--mist); font-size: .95rem; }
+.select select, .birth input { font: inherit; font-size: .92rem; color: var(--paper); background: var(--night); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; color-scheme: dark; }
+.birth { display: flex; gap: 10px; align-items: center; margin-top: 12px; color: var(--mist); font-size: .92rem; }
+.mini.is-small i { width: 9px; height: 13px; }
+.mini-cal { flex: none; display: grid; gap: 2px; }
+.mini-cal.year { grid-template-columns: repeat(13, 5px); }
+.mini-cal.months { grid-template-columns: repeat(4, 10px); }
+.mini-cal i { display: block; border: 1px solid var(--mist); border-radius: 1px; }
+.mini-cal.year i { height: 8px; }
+.mini-cal.months i { height: 14px; }
+.spread-option input:checked + .spread-card .mini-cal i { border-color: var(--star); }
+
+.sig-box { display: flex; gap: 16px; align-items: center; justify-content: center; max-width: 40em; margin: 0 auto; padding: 12px 18px; border: 1px solid var(--line); border-radius: 8px; background: rgba(22, 32, 58, .6); }
+.sig-box p { margin: 0; font-size: .92rem; color: var(--mist); }
+.sig-box b { display: block; color: var(--star); font-size: .85rem; letter-spacing: .06em; }
+.sig-card { appearance: none; border: 0; padding: 0; background: none; cursor: zoom-in; flex: none; width: 64px; aspect-ratio: var(--card); border-radius: 5px; overflow: hidden; box-shadow: 0 0 0 2px var(--star), 0 6px 16px rgba(0, 0, 0, .5); }
+.day-desc { color: var(--mist); font-size: .85rem !important; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding-top: 8px; }
+.cal-block { padding: 16px 18px; border: 1px solid var(--line); border-top: 3px solid var(--tone); border-radius: 6px; background: rgba(22, 32, 58, .55); }
+.cal-block h4 { margin: 0 0 10px; font-size: 1.1rem; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.cal-block h4 span { font-size: .85rem; color: var(--mist); font-weight: 400; }
+.cal-block h4 .mood { margin-left: auto; font-style: normal; font-size: .85rem; color: var(--tone); }
+.cal-weeks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.cal-weeks li { display: grid; grid-template-columns: 34px 5.2em 7.4em minmax(0, 1fr); grid-template-areas: "c wk dt nm" "c wk dt tt"; column-gap: 10px; align-items: center; padding: 6px 4px; border-top: 1px solid rgba(52, 68, 110, .5); animation: rise .4s both; animation-delay: calc(var(--i) * 12ms); }
+.cal-weeks li:first-child { border-top: 0; }
+.cal-weeks .mini-card { grid-area: c; width: 34px; }
+.cal-weeks .wk { grid-area: wk; font-size: .82rem; color: var(--mist); }
+.cal-weeks .dt { grid-area: dt; font-size: .82rem; color: var(--mist); font-variant-numeric: tabular-nums; }
+.cal-weeks .nm { grid-area: nm; font-size: .9rem; line-height: 1.3; }
+.cal-weeks .tt { grid-area: tt; font-size: .8rem; color: var(--mist); line-height: 1.3; }
+.cal-weeks li.is-now, .cal-months li.is-now { background: rgba(242, 194, 48, .1); border-radius: 6px; box-shadow: inset 3px 0 0 var(--star); }
+.cal-weeks li.is-now .wk { color: var(--star); }
+.cal-months { list-style: none; margin: 0; padding: 8px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+.cal-months li { display: flex; gap: 14px; padding: 14px; border: 1px solid var(--line); border-left: 3px solid var(--tone); border-radius: 6px; background: rgba(22, 32, 58, .55); animation: rise .5s both; animation-delay: calc(var(--i) * 40ms); }
+.cal-months .mini-card { flex: none; width: 60px; align-self: start; }
+.cal-months p { margin: 0 0 4px; font-size: .9rem; line-height: 1.55; }
+.cal-months .wk { color: var(--star); font-size: .85rem; }
+.cal-months .nm { font-size: 1rem; }
+.cal-months .nm span { color: var(--mist); font-size: .85rem; margin-left: 4px; }
+.cal-months li.is-now .wk::after { content: ""; }
+.tips { margin: 0 0 40px; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; color: var(--mist); max-width: 44em; }
+.tips b { color: var(--paper); }
+.sig-guide { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+.sig-guide div { padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; background: rgba(22, 32, 58, .5); font-size: .9rem; color: var(--mist); }
+.sig-guide b { display: block; color: var(--paper); margin-bottom: 4px; }
+
 /* ── 좁은 화면 ─────────────────────── */
 @media (max-width: 860px) {
   .spread-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .suit-guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .suit-guide, .sig-guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cal-grid { grid-template-columns: minmax(0, 1fr); }
   .about-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
@@ -367,7 +419,10 @@ h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.3; t
   .top nav a { font-size: .88rem; }
   main { gap: 64px; }
   .intro { padding-top: 40px; }
-  .spread-options, .spread-list, .guide-steps, .rank-guide, .about-grid { grid-template-columns: minmax(0, 1fr); }
+  .spread-options, .spread-list, .guide-steps, .rank-guide, .about-grid, .cal-grid { grid-template-columns: minmax(0, 1fr); }
+  .sig-guide { grid-template-columns: minmax(0, 1fr); }
+  .about-grid.two { grid-template-columns: minmax(0, 1fr); }
+  .cal-weeks li { grid-template-columns: 34px 6.4em minmax(0, 1fr); grid-template-areas: "c wk nm" "c dt tt"; }
   .spread-card { padding: 14px; }
   .reading { grid-template-columns: 96px minmax(0, 1fr); gap: 18px; }
   .reading h3 { font-size: 1.3rem; }

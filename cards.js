@@ -411,6 +411,50 @@ const SPREADS = [
       { at: [4, 1], name: "셋째 디딤돌", desc: "목표 바로 앞의 마지막 단계입니다." },
     ],
   },
+  /* ── 유럽 전통 배열 (family: "euro") ── */
+  {
+    id: "yesno3", family: "euro", name: "세 장 예 / 아니오", count: 3, cols: 3, rows: 1, size: "l", yesno3: true,
+    blurb: "대륙식 32장 덱에서 즐겨 쓰는 방법. 세 장 가운데 빨간 카드가 몇 장인지로 답합니다.",
+    slots: [
+      { at: [1, 1], name: "첫째 장", desc: "질문의 바탕, 지금의 형편입니다." },
+      { at: [2, 1], name: "둘째 장", desc: "일이 흘러가는 방향입니다." },
+      { at: [3, 1], name: "셋째 장", desc: "끝에 닿는 모습입니다." },
+    ],
+  },
+  {
+    id: "horseshoe", family: "euro", name: "말굽", count: 7, cols: 7, rows: 4, size: "xs",
+    blurb: "행운을 담는 말굽 모양으로 일곱 장. 지나온 일에서 결과까지 한 굽이를 읽습니다.",
+    slots: [
+      { at: [1, 1], name: "지나온 일", short: "과거", desc: "지금에 이르게 한 일입니다." },
+      { at: [2, 2], name: "지금", short: "지금", desc: "질문이 서 있는 자리입니다." },
+      { at: [3, 3], name: "숨은 영향", short: "숨은 힘", desc: "아직 드러나지 않았지만 일을 움직이는 힘입니다." },
+      { at: [4, 4], name: "걸림돌", short: "걸림돌", desc: "넘어야 할 장애, 혹은 내가 붙잡고 있는 것입니다." },
+      { at: [5, 3], name: "주변 사람", short: "주변", desc: "가족·친구·동료가 이 일에 보태는 영향입니다." },
+      { at: [6, 2], name: "할 일", short: "할 일", desc: "지금 내가 할 수 있는 가장 좋은 행동입니다." },
+      { at: [7, 1], name: "결과", short: "결과", desc: "이대로 간다면 닿게 될 모습입니다." },
+    ],
+  },
+  {
+    id: "pyramid10", family: "euro", name: "열 장 피라미드", count: 10, cols: 7, rows: 4, size: "xs",
+    blurb: "아래부터 넉 장·석 장·두 장·한 장. 바닥의 기반에서 꼭대기의 결과로 쌓아 올립니다.",
+    slots: [
+      { at: [1, 4], name: "기반 ①", short: "기반", desc: "이 일의 바탕이 된 지난 일입니다." },
+      { at: [3, 4], name: "기반 ②", short: "기반", desc: "이 일의 바탕이 된 지난 일입니다." },
+      { at: [5, 4], name: "기반 ③", short: "기반", desc: "이 일의 바탕이 된 지난 일입니다." },
+      { at: [7, 4], name: "기반 ④", short: "기반", desc: "이 일의 바탕이 된 지난 일입니다." },
+      { at: [2, 3], name: "지금 ①", short: "지금", desc: "지금 벌어지고 있는 일입니다." },
+      { at: [4, 3], name: "지금 ②", short: "지금", desc: "지금 벌어지고 있는 일입니다." },
+      { at: [6, 3], name: "지금 ③", short: "지금", desc: "지금 벌어지고 있는 일입니다." },
+      { at: [3, 2], name: "가까운 앞날 ①", short: "곧", desc: "머지않아 다가올 일입니다." },
+      { at: [5, 2], name: "가까운 앞날 ②", short: "곧", desc: "머지않아 다가올 일입니다." },
+      { at: [4, 1], name: "꼭대기", short: "결과", desc: "모든 것이 쌓여 닿는 결과입니다." },
+    ],
+  },
+  {
+    id: "gypsy", family: "euro", name: "집시 스물한 장", count: 21, cols: 7, rows: 3, size: "xs", groups: true,
+    blurb: "세 줄 일곱 장. 세로 한 줄씩 나·집·바람·기대·뜻밖의 일·가까운 앞날·먼 앞날을 읽습니다.",
+    slots: [], // GYPSY_GROUPS 가 정의된 뒤 아래에서 채운다
+  },
   {
     id: "week", name: "일주일 운세 (카토만시)", count: 25, cols: 7, rows: 5, size: "xs", week: true,
     blurb: "25장으로 한 주를 읽습니다. 요일마다 세 장, 위에는 한 주의 환경과 과제.",
@@ -434,6 +478,44 @@ function buildWeekSlots() {
   slots.push({ at: [4, 1], name: "환경", short: "환경", desc: "한 주 동안 나에게 큰 영향을 주는 대상입니다. 사람일 수도, 사건일 수도 있습니다.", bottom: true });
   return slots;
 }
+
+const GYPSY_GROUPS = [
+  { name: "나 자신", short: "나", desc: "지금의 나, 내 마음과 몸의 형편입니다." },
+  { name: "집과 가족", short: "집", desc: "집안의 분위기, 가족과 가까운 사람들입니다." },
+  { name: "바라는 것", short: "바람", desc: "마음속 깊이 원하는 것, 사랑과 소망입니다." },
+  { name: "기대하는 것", short: "기대", desc: "일어나리라 믿고 기다리는 일입니다." },
+  { name: "뜻밖의 일", short: "뜻밖", desc: "생각지 못하게 끼어들 일입니다." },
+  { name: "가까운 앞날", short: "곧", desc: "몇 주에서 몇 달 안에 다가올 일입니다." },
+  { name: "먼 앞날", short: "나중", desc: "길게 보았을 때 닿게 될 모습입니다." },
+];
+function buildGypsySlots() {
+  // 세 줄로 일곱 장씩 깔고(1~7, 8~14, 15~21), 세로 한 줄을 한 묶음으로 읽는다.
+  const slots = [];
+  for (let row = 0; row < 3; row++) {
+    for (let g = 0; g < 7; g++) {
+      const G = GYPSY_GROUPS[g];
+      slots.push({ at: [g + 1, row + 1], group: g, name: `${G.name} · ${row + 1}`, short: row === 0 ? G.short : "", desc: G.desc });
+    }
+  }
+  return slots;
+}
+SPREADS.find((s) => s.id === "gypsy").slots = buildGypsySlots();
+
+/* 대륙식(프랑스·이탈리아) 피케 덱: 무늬마다 7·8·9·10·J·Q·K·A, 모두 32장 */
+const DECK32 = DECK52.filter((id) => CARDS[id].rank === 1 || CARDS[id].rank >= 7);
+/* 인물 카드 12장 */
+const COURTS = DECK52.filter((id) => CARDS[id].rank >= 11);
+
+/* 타로로 옮기면 */
+const TAROT_RANK = { 1: "에이스", 11: "시종(페이지)", 12: "퀸", 13: "킹" };
+
+/* 1년 · 열두 달 */
+const CALENDARS = [
+  { id: "year", name: "1년 52주 달력", count: 52,
+    blurb: "52장을 52주에 한 장씩. 한 해의 흐름을 주마다 미리 살피는 운세 달력입니다." },
+  { id: "months", name: "열두 달 인물 카드", count: 12,
+    blurb: "J·Q·K 열두 장을 열두 달에 한 장씩. 달마다 곁에 설 사람과 그 달의 기운을 봅니다." },
+];
 
 /* 특수 카드점: 카드를 치우며 결과를 보는 놀이형 점 */
 const GAMES = [

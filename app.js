@@ -46,19 +46,36 @@
     if (sp.week) {
       return `<span class="mini mini-week" aria-hidden="true">${"<i></i>".repeat(1)}<br>${"<i></i>".repeat(3)}<br>${"<i></i>".repeat(7)}</span>`;
     }
-    const cells = sp.slots.map((s, i) => `<i style="grid-column:${s.at[0]};grid-row:${s.at[1]}">${i + 1}</i>`).join("");
-    return `<span class="mini" style="grid-template-columns:repeat(${sp.cols},14px)" aria-hidden="true">${cells}</span>`;
+    const small = sp.count > 9;
+    const cells = sp.slots.map((s, i) => `<i style="grid-column:${s.at[0]};grid-row:${s.at[1]}">${small ? "" : i + 1}</i>`).join("");
+    return `<span class="mini ${small ? "is-small" : ""}" style="grid-template-columns:repeat(${sp.cols},${small ? 9 : 14}px)" aria-hidden="true">${cells}</span>`;
   }
 
-  function renderSetup() {
-    $("#spreadOptions").innerHTML = SPREADS.map((sp, i) => `
+  function spreadOption(sp, value, checked) {
+    return `
       <label class="spread-option">
-        <input type="radio" name="spread" value="${sp.id}" ${i === 0 ? "checked" : ""}>
+        <input type="radio" name="spread" value="${value}" ${checked ? "checked" : ""}>
         <span class="spread-card">
           ${miniLayout(sp)}
           <span><strong>${esc(sp.name)}</strong> <em>${sp.count}장</em><p>${esc(sp.blurb)}</p></span>
         </span>
+      </label>`;
+  }
+
+  function renderSetup() {
+    $("#spreadOptions").innerHTML = SPREADS.filter((sp) => !sp.family).map((sp, i) => spreadOption(sp, sp.id, i === 0)).join("");
+    $("#euroOptions").innerHTML = SPREADS.filter((sp) => sp.family === "euro").map((sp) => spreadOption(sp, sp.id, false)).join("");
+    $("#calOptions").innerHTML = CALENDARS.map((c) => `
+      <label class="spread-option">
+        <input type="radio" name="spread" value="cal:${c.id}">
+        <span class="spread-card">
+          <span class="mini-cal ${c.id}" aria-hidden="true">${"<i></i>".repeat(c.id === "year" ? 52 : 12)}</span>
+          <span><strong>${esc(c.name)}</strong> <em>${c.count}장</em><p>${esc(c.blurb)}</p></span>
+        </span>
       </label>`).join("");
+
+    $("#sigCard").innerHTML += SUIT_ORDER.map((su) => `<optgroup label="${SUITS[su].sym} ${SUITS[su].name}">${
+      [13, 12, 11].map((r) => `<option value="${su}${r}">${SUITS[su].name} ${RANKS[r].label} — ${{ 13: "남성", 12: "여성", 11: "젊은이" }[r]}</option>`).join("")}</optgroup>`).join("");
 
     $("#gameOptions").innerHTML = GAMES.map((g) => `
       <label class="spread-option">
@@ -76,15 +93,24 @@
   }
 
   function syncSetup() {
-    const v = $("#setup").spread.value;
-    const isGame = v.startsWith("game:");
-    $("#topicField").hidden = isGame;
-    $("#jokerField").hidden = isGame || v === "week";
+    const f = $("#setup");
+    const v = f.spread.value;
+    const isGame = v.startsWith("game:"), isCal = v.startsWith("cal:");
+    const sp = SPREAD_BY_ID[v];
+    $("#topicField").hidden = isGame || isCal;
+    $("#jokerField").hidden = !sp || !!sp.week;
+    $("#deck32Field").hidden = !sp;
+    $("#sigField").hidden = !sp || sp.count < 3;
     $("#mcField").hidden = v !== "game:montecarlo";
+    $("#calField").hidden = !isCal;
+    $("#calNowLabel").textContent = v === "cal:months" ? "이번 달부터" : "이번 주부터";
+    $("#calYearLabel").textContent = v === "cal:months" ? "1월부터" : "올해 첫 주부터";
+    $("#birthField").hidden = !isCal || f.calStart.value !== "birth";
     const q = $("#question");
     q.placeholder = v === "yesno" ? "예) 이번 달 안에 연락이 올까요?"
       : v === "game:montecarlo" ? "예) 그 사람은 나를 어떻게 생각할까요?"
       : v === "week" ? "예) 이번 주는 어떻게 흘러갈까요?"
+      : isCal ? "예) 올해 마음에 둔 일, 언제 움직이면 좋을까요?"
       : "예) 지금 하는 일, 계속해도 될까요?";
   }
 
@@ -92,12 +118,22 @@
   async function start() {
     const f = $("#setup");
     const v = f.spread.value;
-    state.kind = v.startsWith("game:") ? "game" : "spread";
+    state.kind = v.startsWith("game:") ? "game" : v.startsWith("cal:") ? "cal" : "spread";
     state.spread = state.kind === "spread" ? SPREAD_BY_ID[v] : null;
     state.game = state.kind === "game" ? v.slice(5) : null;
+    state.cal = state.kind === "cal" ? v.slice(4) : null;
     state.topic = f.topic.value;
     state.mcMode = f.mc.value;
     state.joker = state.kind === "spread" && !state.spread.week && $("#useJoker").checked;
+    state.deck32 = state.kind === "spread" && $("#use32").checked;
+    state.sig = state.kind === "spread" && state.spread.count >= 3 ? $("#sigCard").value || null : null;
+    state.calStart = f.calStart.value;
+    if (state.kind === "cal" && state.calStart === "birth") {
+      const b = $("#birth");
+      b.required = true;
+      if (!b.value) { b.reportValidity(); b.focus(); return; }
+      state.birth = b.value;
+    }
     state.question = $("#question").value.trim();
     state.picks = [];
     state.flipped = new Set();
@@ -105,19 +141,24 @@
 
     const table = $("#table");
     table.hidden = false;
-    $("#spreadTitle").textContent = state.kind === "game" ? GAMES.find((g) => g.id === state.game).name : state.spread.name;
+    $("#spreadTitle").textContent = state.kind === "game" ? GAMES.find((g) => g.id === state.game).name
+      : state.kind === "cal" ? CALENDARS.find((c) => c.id === state.cal).name : state.spread.name;
     const asked = $("#asked");
     asked.hidden = !state.question;
     asked.textContent = state.question;
-    for (const id of ["deck", "deckActions", "tableActions", "game", "together"]) $("#" + id).hidden = true;
+    for (const id of ["deck", "deckActions", "tableActions", "game", "together", "sigBox"]) $("#" + id).hidden = true;
     $("#layout").innerHTML = "";
     $("#readings").innerHTML = "";
     table.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
 
-    state.deck = shuffled(state.joker ? [...DECK52, "JK"] : DECK52);
+    let base = state.kind === "cal" && state.cal === "months" ? COURTS : state.deck32 ? DECK32 : DECK52;
+    if (state.sig) base = base.filter((id) => id !== state.sig);
+    if (state.joker) base = [...base, "JK"];
+    state.deck = shuffled(base);
     await ritual(run);
     if (run !== state.run) return;
     if (state.kind === "game") startGame();
+    else if (state.kind === "cal") renderCalendar();
     else beginPick();
   }
 
@@ -174,6 +215,7 @@
       setStatus(sp.count > 1 ? `끌리는 카드 ${sp.count}장을 차례로 고르세요.` : "끌리는 카드 한 장을 고르세요.");
     }
     $("#deckActions").hidden = false;
+    $("#flipAll").hidden = false;
   }
 
   function takeFromDeck(i) {
@@ -231,14 +273,22 @@
     const sp = state.spread;
     const lay = $("#layout");
     lay.dataset.size = sp.size;
-    lay.classList.toggle("is-week", !!sp.week);
+    const compact = sp.size === "xs";
+    lay.classList.toggle("is-week", compact);
     lay.style.setProperty("--cols", sp.cols);
     lay.innerHTML = sp.slots.map((s, n) => `
       <div class="slot" data-n="${n}" style="grid-column:${s.at[0]};grid-row:${s.at[1]}">
-        <p class="slot-label">${sp.week ? `<b>${n + 1}</b>${esc(s.short)}` : `<b>${n + 1}</b>${esc(s.name)}`}</p>
+        <p class="slot-label"><b>${n + 1}</b>${esc(compact ? s.short ?? s.name : s.name)}</p>
         <div class="slot-body"><span class="slot-hole">${n + 1}</span></div>
         <p class="slot-name"></p>
       </div>`).join("");
+    const box = $("#sigBox");
+    if (state.sig) {
+      const c = CARDS[state.sig];
+      box.innerHTML = `<button type="button" class="sig-card" data-card="${state.sig}" aria-label="${esc(c.name)} 자세히 보기">${face(state.sig)}</button>
+        <p><b>대표 카드 · 나</b>${cardName(state.sig)} — ${esc(c.title)}. 이 카드는 덱에서 빼 두었습니다. 펼친 카드들을 ‘나’와 견주어 읽어 보세요.</p>`;
+      box.hidden = false;
+    }
   }
 
   function flip(n) {
@@ -249,7 +299,7 @@
     btn.setAttribute("aria-label", `${n + 1}번 카드: ${CARDS[state.picks[n]].name}`);
     const id = state.picks[n], c = CARDS[id];
     const nameEl = $(`#layout .slot[data-n="${n}"] .slot-name`);
-    nameEl.innerHTML = state.spread.week ? cardName(id) : `<span class="dot tone-${c.tone}"></span>${cardName(id)}`;
+    nameEl.innerHTML = state.spread.size === "xs" ? cardName(id) : `<span class="dot tone-${c.tone}"></span>${cardName(id)}`;
     renderReadings();
     if (state.flipped.size === state.spread.count) {
       setStatus("모든 카드를 뒤집었습니다. 아래 풀이를 읽어 보세요.");
@@ -265,7 +315,7 @@
       if (run !== state.run) return;
       if (state.flipped.has(n)) continue;
       flip(n);
-      await wait(reduceMotion ? 0 : state.spread.week ? 60 : 220);
+      await wait(reduceMotion ? 0 : state.spread.count > 9 ? 60 : 220);
     }
   }
 
@@ -303,6 +353,7 @@
   function renderReadings() {
     const sp = state.spread;
     if (sp.week) return renderWeekReadings();
+    if (sp.groups) return renderGroupReadings();
     const order = [...state.flipped].sort((a, b) => a - b);
     $("#readings").innerHTML = order.map((n) => {
       const s = sp.slots[n];
@@ -339,20 +390,40 @@
     const dayHTML = days.map((d, i) => {
       const ns = [i, i + 7, i + 14];
       if (!ns.every(has)) return "";
-      const ids = ns.map((n) => state.picks[n]);
-      const score = ids.reduce((s, id, k) => s + (CARDS[id].tone === "pos" ? 1 : CARDS[id].tone === "neg" ? -1 : 0) * (3 - k), 0);
-      const mood = score >= 2 ? ["pos", "맑음"] : score <= -2 ? ["neg", "조심"] : ["neu", "보통"];
-      const main = CARDS[ids[0]];
-      return `<article class="day tone-${mood[0]}">
-        <header><h4>${d}요일</h4><span class="mood">${mood[1]}</span></header>
-        <div class="day-cards">${ids.map((id, k) => `<button type="button" class="mini-card t${k}" data-card="${id}" aria-label="${esc(CARDS[id].name)}">${face(id)}</button>`).join("")}</div>
-        <p class="day-main"><strong>${cardName(ids[0])}</strong> ${esc(main.title)}</p>
-        <p>${esc(main.text.split(". ")[0].replace(/\.?$/, "."))}</p>
-        <p class="day-sub">함께: ${ids.slice(1).map((id) => `${cardName(id)} <span>(${esc(CARDS[id].kw[0])})</span>`).join(", ")}</p>
-      </article>`;
+      return groupBlock(`${d}요일`, ns.map((n) => state.picks[n]), true);
     }).join("");
     if (dayHTML) html += `<section class="week-days"><h3>요일별 운세</h3><p class="section-lead">요일마다 위 카드가 가장 크게, 아래로 갈수록 작게 작용합니다. 카드를 누르면 자세한 풀이가 열립니다.</p><div class="days">${dayHTML}</div></section>`;
     $("#readings").innerHTML = html;
+  }
+
+  const firstSentence = (t) => t.split(". ")[0].replace(/\.?$/, ".");
+
+  /* 세 장 묶음 하나. weighted 면 첫 장이 가장 크게(일주일 운세), 아니면 셋을 고르게 읽는다(집시). */
+  function groupBlock(title, ids, weighted, desc = "") {
+    const w = weighted ? [3, 2, 1] : [1, 1, 1];
+    const score = ids.reduce((s, id, k) => s + (CARDS[id].tone === "pos" ? 1 : CARDS[id].tone === "neg" ? -1 : 0) * w[k], 0);
+    const lim = weighted ? 2 : 1;
+    const mood = score >= lim ? ["pos", "맑음"] : score <= -lim ? ["neg", "조심"] : ["neu", "보통"];
+    const main = CARDS[ids[0]];
+    return `<article class="day tone-${mood[0]}">
+        <header><h4>${esc(title)}</h4><span class="mood">${mood[1]}</span></header>
+        ${desc ? `<p class="day-desc">${esc(desc)}</p>` : ""}
+        <div class="day-cards">${ids.map((id, k) => `<button type="button" class="mini-card t${weighted ? k : 0}" data-card="${id}" aria-label="${esc(CARDS[id].name)}">${face(id)}</button>`).join("")}</div>
+        <p class="day-main"><strong>${cardName(ids[0])}</strong> ${esc(main.title)}</p>
+        <p>${esc(firstSentence(main.text))}</p>
+        <p class="day-sub">함께: ${ids.slice(1).map((id) => `${cardName(id)} <span>(${esc(CARDS[id].kw[0])})</span>`).join(", ")}</p>
+      </article>`;
+  }
+
+  function renderGroupReadings() {
+    const html = GYPSY_GROUPS.map((g, i) => {
+      const ns = [i, i + 7, i + 14];
+      if (!ns.every((n) => state.flipped.has(n))) return "";
+      return groupBlock(`${i + 1}. ${g.name}`, ns.map((n) => state.picks[n]), false, g.desc);
+    }).join("");
+    $("#readings").innerHTML = html
+      ? `<section class="week-days"><h3>일곱 묶음 읽기</h3><p class="section-lead">세로 한 줄(세 장)이 한 묶음입니다. 맨 위 카드가 이야기의 중심이고, 아래 두 장이 그 뜻을 거듭니다. 카드를 누르면 자세한 풀이가 열립니다.</p><div class="days">${html}</div></section>`
+      : "";
   }
 
   function renderTogether() {
@@ -383,18 +454,137 @@
     if (ids.includes("JK")) lines.push("조커가 섞여 있습니다. 예상하지 못한 변수가 판을 바꿀 수 있습니다.");
     if (ids.includes("H9")) lines.push("소원 카드(하트 9)가 나왔습니다. 바라는 일이 이루어질 기운이 있습니다.");
     if (ids.includes("S9")) lines.push("스페이드 9가 나왔습니다. 무리하지 말고 걱정을 하나씩 덜어 내세요.");
+    if (state.sig) {
+      const sc = CARDS[state.sig];
+      const same = real.filter((id) => CARDS[id].suit === sc.suit).length;
+      lines.push(`대표 카드 ${cardName(state.sig)}와 같은 무늬가 ${same}장입니다. ${same >= Math.ceil(real.length / 3)
+        ? "펼친 일 가운데 많은 부분이 나와 같은 결이라, 내가 이끌어 갈 수 있는 일입니다."
+        : "나와 다른 결의 일이 많아, 주변과 상황의 힘을 함께 살펴야 합니다."}`);
+      if (people.length) lines.push("대표 카드 말고 나온 그림 카드는 내 주변 사람입니다. 그 사람의 무늬가 그가 맡은 역할을 말해 줍니다.");
+    }
 
     const ranks = {};
     real.forEach((id) => { const r = CARDS[id].rank; ranks[r] = (ranks[r] || 0) + 1; });
     const combos = Object.entries(ranks).filter(([, k]) => k >= 2).map(([r, k]) =>
       `<li><b>${RANKS[r].label} ${k}장</b> ${esc(COMBOS[r][Math.min(k, 4) - 2])}</li>`);
 
-    box.innerHTML = `<h3>함께 읽기</h3>
+    let verdict = "";
+    if (sp.yesno3) {
+      const reds = real.filter((id) => SUITS[CARDS[id].suit].color === "red").length;
+      const v = [["neg", "아니오", "세 장 모두 검은 카드입니다. 분명한 ‘아니오’입니다."],
+        ["neg", "아마도 아니오", "빨간 카드가 한 장뿐입니다. 지금 그대로라면 쉽지 않습니다."],
+        ["pos", "아마도 예", "빨간 카드가 두 장입니다. ‘예’ 쪽으로 기웁니다. 검은 한 장이 붙는 조건을 말해 줍니다."],
+        ["pos", "예", "세 장 모두 빨간 카드입니다. 분명한 ‘예’입니다."]][Math.min(reds, 3)];
+      verdict = `<div class="yesno tone-${v[0]}"><p class="yn-word">${v[1]}</p><p>${v[2]}${ids.includes("JK") ? " 조커는 세지 않았습니다." : ""}</p></div>`;
+    }
+    box.innerHTML = `${verdict}<h3>함께 읽기</h3>
       <p class="tally"><span class="tone-pos">좋은 카드 ${tone.pos}</span><span class="tone-neu">중립 ${tone.neu}</span><span class="tone-neg">조심 ${tone.neg}</span>
       ${SUIT_ORDER.map((s) => `<span class="suit-n">${sym(s)} ${bySuit[s]}</span>`).join("")}</p>
       <ul>${lines.map((l) => `<li>${l}</li>`).join("")}</ul>
       ${combos.length ? `<p class="sub combo-h">같은 숫자가 겹쳤습니다</p><ul class="combos">${combos.join("")}</ul>` : ""}`;
     box.hidden = false;
+  }
+
+  /* ── 1년 · 열두 달 ───────────────────────── */
+  const DAY = 86400000;
+  const LUCKY = new Set(["H9", "H10", "D10", "C10", "H1", "D1", "C1"]);
+  const HEAVY = new Set(["S9", "S10", "S1"]);
+  const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+  function mondayOf(d) {
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+    return x;
+  }
+  function lastBirthday(today) {
+    const [, m, d] = state.birth.split("-").map(Number);
+    let b = new Date(today.getFullYear(), m - 1, d);
+    if (b > today) b = new Date(today.getFullYear() - 1, m - 1, d);
+    return b;
+  }
+  function moodOf(ids) {
+    const score = ids.reduce((s, id) => s + (CARDS[id].tone === "pos" ? 1 : CARDS[id].tone === "neg" ? -1 : 0), 0);
+    const k = score / ids.length;
+    return k >= 0.25 ? ["pos", "밝음"] : k <= -0.15 ? ["neg", "조심"] : ["neu", "보통"];
+  }
+
+  function renderCalendar() {
+    const today = new Date();
+    const ids = state.deck.slice(0, state.cal === "year" ? 52 : 12);
+    $("#tableActions").hidden = false;
+    $("#flipAll").hidden = true;
+    const box = $("#together");
+    let html = "", now = -1, nowLabel = "";
+
+    if (state.cal === "year") {
+      let start;
+      if (state.calStart === "now") start = mondayOf(today);
+      else if (state.calStart === "birth") start = mondayOf(lastBirthday(today));
+      else {
+        start = new Date(today.getFullYear(), 0, 1);
+        start.setDate(start.getDate() + ((8 - start.getDay()) % 7)); // 1월의 첫 월요일
+      }
+      const weeks = ids.map((id, i) => {
+        const a = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i * 7);
+        const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6);
+        return { id, n: i + 1, a, b };
+      });
+      now = weeks.findIndex((w) => today >= w.a && today < new Date(w.b.getTime() + DAY));
+      const quarters = [0, 1, 2, 3].map((q) => {
+        const part = weeks.slice(q * 13, q * 13 + 13);
+        const mood = moodOf(part.map((w) => w.id));
+        return `<section class="cal-block tone-${mood[0]}">
+          <h4>${q * 13 + 1}~${q * 13 + 13}주 <span>${md(part[0].a)} ~ ${md(part[12].b)}</span><em class="mood">${mood[1]}</em></h4>
+          <ol class="cal-weeks">${part.map((w) => `
+            <li class="${w.n - 1 === now ? "is-now" : ""}" style="--i:${w.n}">
+              <button type="button" class="mini-card" data-card="${w.id}" aria-label="${esc(CARDS[w.id].name)}">${face(w.id)}</button>
+              <span class="wk">${w.n}주차${w.n - 1 === now ? " · 이번 주" : ""}</span>
+              <span class="dt">${md(w.a)} ~ ${md(w.b)}</span>
+              <span class="nm"><span class="dot tone-${CARDS[w.id].tone}"></span>${cardName(w.id)}</span>
+              <span class="tt">${esc(CARDS[w.id].title)}</span>
+            </li>`).join("")}</ol>
+        </section>`;
+      }).join("");
+      const lucky = weeks.filter((w) => LUCKY.has(w.id)), heavy = weeks.filter((w) => HEAVY.has(w.id));
+      const list = (ws) => ws.map((w) => `${w.n}주차(${md(w.a)}) ${cardName(w.id)}`).join(", ");
+      const startText = { now: "이번 주", year: "올해 1월의 첫 월요일", birth: "지난 생일이 든 주" }[state.calStart];
+      html = `<div class="cal-grid">${quarters}</div>`;
+      box.innerHTML = `<h3>한 해의 흐름</h3>
+        <p>${startText}부터 52주에 카드를 한 장씩 놓았습니다. 13주씩 넷으로 나누어 계절마다의 흐름을 봅니다.</p>
+        <ul>
+          ${lucky.length ? `<li><b>힘이 실리는 주</b> ${list(lucky)}</li>` : ""}
+          ${heavy.length ? `<li><b>조심할 주</b> ${list(heavy)} — 큰 결정은 앞뒤 주로 옮겨 보세요.</li>` : ""}
+          <li>달력은 대략의 흐름을 보는 도구입니다. 좋은 카드가 곧 좋은 일, 무거운 카드가 곧 나쁜 일은 아닙니다.</li>
+        </ul>`;
+      if (now >= 0) nowLabel = `<p class="pos"><b>${now + 1}주차</b>이번 주 — ${md(weeks[now].a)} ~ ${md(weeks[now].b)}</p>`;
+      setStatus("카드를 52주에 한 장씩 놓았습니다. 카드를 누르면 풀이가 열립니다.");
+    } else {
+      const lb = state.calStart === "birth" ? lastBirthday(today) : null;
+      const startMonth = state.calStart === "now" ? new Date(today.getFullYear(), today.getMonth(), 1)
+        : lb ? new Date(lb.getFullYear(), lb.getMonth(), 1)
+        : new Date(today.getFullYear(), 0, 1);
+      const role = { 11: "소식과 새 얼굴이 일을 움직이는 달입니다.", 12: "돌보고 받아 주는 사람이 곁에 서는 달입니다.", 13: "결정권을 쥔 사람이 열쇠가 되는 달입니다." };
+      const months = ids.map((id, i) => ({ id, d: new Date(startMonth.getFullYear(), startMonth.getMonth() + i, 1) }));
+      now = months.findIndex((m) => m.d.getFullYear() === today.getFullYear() && m.d.getMonth() === today.getMonth());
+      html = `<ol class="cal-months">${months.map((m, i) => {
+        const c = CARDS[m.id];
+        return `<li class="${i === now ? "is-now" : ""} tone-${c.tone}" style="--i:${i}">
+          <button type="button" class="mini-card" data-card="${m.id}" aria-label="${esc(c.name)}">${face(m.id)}</button>
+          <div>
+            <p class="wk">${m.d.getFullYear()}년 ${m.d.getMonth() + 1}월${i === now ? " · 이번 달" : ""}</p>
+            <p class="nm">${cardName(m.id)} <span>${esc(c.title)}</span></p>
+            <p>${esc(role[c.rank])} ${esc(firstSentence(c.text))}</p>
+          </div>
+        </li>`;
+      }).join("")}</ol>`;
+      const bySuit = SUIT_ORDER.map((su) => `${sym(su)} ${SUITS[su].name} (${SUITS[su].theme}): ${months.filter((m) => CARDS[m.id].suit === su).map((m) => `${m.d.getMonth() + 1}월`).join(" · ")}`);
+      box.innerHTML = `<h3>열두 달의 사람들</h3>
+        <p>인물 카드 열두 장을 한 달에 한 장씩 놓았습니다. 무늬는 그 달에 힘이 실리는 분야입니다.</p>
+        <ul>${bySuit.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+      if (now >= 0) nowLabel = `<p class="pos"><b>${today.getMonth() + 1}월</b>이번 달</p>`;
+      setStatus("열두 달에 인물 카드를 한 장씩 놓았습니다. 카드를 누르면 풀이가 열립니다.");
+    }
+    box.hidden = false;
+    $("#readings").innerHTML = html + (now >= 0 ? readingHTML(ids[now], nowLabel) : "");
   }
 
   /* ── 특수 카드점 ─────────────────────────── */
@@ -682,7 +872,8 @@
     const c = CARDS[id];
     const suitBlock = c.suit
       ? `<div><p class="sub">무늬 · ${sym(c.suit)} ${SUITS[c.suit].name}</p><p>${esc(SUITS[c.suit].text)}</p></div>
-         <div><p class="sub">숫자 · ${RANKS[c.rank].label} (${RANKS[c.rank].word})</p><p>${esc(RANKS[c.rank].text)}</p></div>`
+         <div><p class="sub">숫자 · ${RANKS[c.rank].label} (${RANKS[c.rank].word})</p><p>${esc(RANKS[c.rank].text)}</p></div>
+         <div><p class="sub">타로로 옮기면</p><p>${esc(SUITS[c.suit].tarot)} ${esc(TAROT_RANK[c.rank] || c.rank)}${c.rank === 11 ? " — 타로의 기사는 트럼프에 없어서, J를 시종이나 기사 어느 쪽으로 읽을지는 해석자마다 다릅니다" : ""}${c.rank >= 2 && c.rank <= 6 ? " · 대륙식 32장 덱에는 없는 카드" : ""}</p></div>`
       : "";
     $("#dialogBody").innerHTML = `<div class="dialog-grid">
       <div class="dialog-card">${face(id)}</div>
@@ -741,12 +932,14 @@
 
     $("#spreadList").innerHTML = SPREADS.map((sp) => `
       <article class="spread-entry">
-        <h4>${esc(sp.name)} <span>${sp.count}장</span></h4>
+        <h4>${esc(sp.name)} <span>${sp.count}장${sp.family === "euro" ? " · 유럽 전통" : ""}</span></h4>
         <p>${esc(sp.blurb)}</p>
         ${sp.week
           ? `<p>덱 위에서부터 1~7번을 셋째 줄(월~일), 8~14번을 넷째 줄, 15~21번을 다섯째 줄에 놓고, 22~24번을 둘째 줄에 놓습니다. 마지막 25번은 반드시 덱의 <b>맨 아래</b>에서 뽑아 맨 윗줄에 놓습니다.</p>
              <ol><li><b>25 환경</b> — 한 주 동안 큰 영향을 주는 사람이나 사건</li><li><b>22 롱 레인지</b> — 한 주의 방향, 가장 관심을 둘 곳</li><li><b>23 플루토</b> — 넘어야 할 고비</li><li><b>24 리절트</b> — 고비를 마무리하는 해답</li><li><b>1~21</b> — 요일별 운세. 위 줄일수록 영향이 큽니다</li></ol>`
-          : `<ol>${sp.slots.map((s) => `<li><b>${esc(s.name)}</b> — ${esc(s.desc)}</li>`).join("")}</ol>`}
+          : sp.groups
+            ? `<p>덱 위에서 일곱 장씩 세 줄로 깔고, 세로 한 줄(세 장)을 한 묶음으로 읽습니다.</p><ol>${GYPSY_GROUPS.map((g) => `<li><b>${esc(g.name)}</b> — ${esc(g.desc)}</li>`).join("")}</ol>`
+            : `<ol>${sp.slots.filter((s, i, a) => a.findIndex((x) => x.desc === s.desc) === i).map((s) => `<li><b>${esc(s.name.replace(/ ①$/, ""))}</b> — ${esc(s.desc)}</li>`).join("")}</ol>`}
       </article>`).join("");
   }
 
