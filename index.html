@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoonHongTRUMP</title>
+<meta name="description" content="트럼프 카드 52장으로 보는 카드점. 오늘의 한 장부터 일주일 운세, 몬테카를로·피라미드 점까지.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23101a2e'/%3E%3Cpath d='M32 52C18 41 10 33 10 23c0-7 5-12 12-12 5 0 8 3 10 7 2-4 5-7 10-7 7 0 12 5 12 12 0 10-8 18-22 29z' fill='%23e0566a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Gowun+Batang:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="#draw" aria-label="MoonHongTRUMP 처음으로">Moon<b>Hong</b>TRUMP</a>
+  <nav aria-label="주요 메뉴">
+    <a href="#draw">카드 뽑기</a>
+    <a href="#spreads">배열법</a>
+    <a href="#library">카드 도감</a>
+    <a href="#guide">읽는 법</a>
+    <a href="#about">카드 이야기</a>
+  </nav>
+</header>
+
+<main>
+  <section class="intro" id="draw">
+    <p class="eyebrow">Cartomancy · 쉰두 장의 트럼프 카드</p>
+    <h1>게임 카드 한 벌로,<br>오늘의 운을 읽습니다</h1>
+    <p class="lead">하트는 마음, 다이아몬드는 돈과 소식, 클럽은 일과 사람, 스페이드는 시련과 경고. 서랍 속 트럼프 카드도 오래전부터 점을 치던 카드였습니다. 질문을 떠올리고 배열을 골라 보세요.</p>
+
+    <form class="setup" id="setup">
+      <fieldset class="spreads">
+        <legend>배열법을 고르세요</legend>
+        <div class="spread-options" id="spreadOptions"></div>
+      </fieldset>
+
+      <fieldset class="spreads">
+        <legend>특수 카드점 <span>(카드를 치우며 답을 찾는 놀이형 점)</span></legend>
+        <div class="spread-options games" id="gameOptions"></div>
+      </fieldset>
+
+      <div class="setup-row">
+        <fieldset class="choice" id="topicField">
+          <legend>무엇을 볼까요</legend>
+          <div class="chips" role="radiogroup">
+            <label><input type="radio" name="topic" value="all" checked><span>전체</span></label>
+            <label><input type="radio" name="topic" value="love"><span>연애 · 관계</span></label>
+            <label><input type="radio" name="topic" value="work"><span>일 · 돈</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="choice" id="mcField" hidden>
+          <legend>몬테카를로로 볼 것</legend>
+          <div class="chips" role="radiogroup">
+            <label><input type="radio" name="mc" value="love" checked><span>연애점</span></label>
+            <label><input type="radio" name="mc" value="wish"><span>소원점</span></label>
+          </div>
+        </fieldset>
+
+        <label class="toggle" id="jokerField"><input type="checkbox" id="useJoker"><span>조커 한 장 넣기</span></label>
+      </div>
+
+      <div class="question">
+        <label for="question">마음속 질문 <span>(선택)</span></label>
+        <input id="question" name="question" type="text" maxlength="80" autocomplete="off" placeholder="예) 이번 달 안에 연락이 올까요?">
+      </div>
+
+      <button class="primary" type="submit">카드 섞기</button>
+    </form>
+  </section>
+
+  <section class="table" id="table" hidden>
+    <div class="table-head">
+      <h2 id="spreadTitle"></h2>
+      <p class="asked" id="asked" hidden></p>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- 섞기와 컷 -->
+    <div class="ritual" id="ritual" hidden>
+      <div class="shuffle-stack" id="shuffleStack" aria-hidden="true"></div>
+      <div class="cut" id="cut" role="group" aria-label="컷 할 더미" hidden></div>
+    </div>
+
+    <!-- 일반 배열 -->
+    <div class="deck" id="deck" aria-label="뒤집어 놓은 카드" hidden></div>
+    <div class="deck-actions" id="deckActions" hidden>
+      <button type="button" class="ghost" id="autoPick">남은 자리 자동으로 채우기</button>
+    </div>
+    <div class="layout-scroll"><div class="layout" id="layout"></div></div>
+    <div class="table-actions" id="tableActions" hidden>
+      <button type="button" class="ghost" id="flipAll">모두 뒤집기</button>
+      <button type="button" class="ghost" id="redraw">다시 뽑기</button>
+      <a class="ghost" href="#draw">배열 바꾸기</a>
+    </div>
+
+    <!-- 특수 카드점 -->
+    <div class="game" id="game" hidden>
+      <div class="game-board" id="gameBoard"></div>
+      <div class="game-side" id="gameSide"></div>
+      <div class="table-actions" id="gameActions"></div>
+    </div>
+
+    <aside class="together" id="together" hidden></aside>
+    <div class="readings" id="readings"></div>
+  </section>
+
+  <section class="spread-book" id="spreads">
+    <h2>배열법과 자리의 의미</h2>
+    <p class="section-lead">카드를 놓는 자리마다 맡은 역할이 있습니다. 카드의 뜻을 자리의 질문에 대어 읽으면 됩니다.</p>
+    <div class="spread-list" id="spreadList"></div>
+
+    <h3 class="book-sub">특수 카드점</h3>
+    <div class="spread-list">
+      <article class="spread-entry">
+        <h4>몬테카를로 <span>연애점 · 소원점</span></h4>
+        <p>꽃잎을 한 장씩 떼며 ‘좋아한다, 아니다’를 세는 꽃점과 닮은 점입니다. 52장을 섞어 다섯 장씩 다섯 줄, 25장을 앞면으로 깝니다.</p>
+        <ol>
+          <li>위아래·좌우·대각선으로 붙어 있는 같은 숫자 두 장을 찾아 치웁니다.</li>
+          <li>더 치울 짝이 없으면 빈자리를 손에 든 카드로 채웁니다. 오른쪽에서 왼쪽, 아래에서 위로 채웁니다.</li>
+          <li>다시 짝을 찾아 치우고 채우기를 되풀이합니다.</li>
+          <li>손의 카드 27장을 모두 써 버리면 가장 좋은 답입니다. 남았다면 남은 장수를 다섯 가지 답에 차례로 세어 마지막에 닿는 답을 봅니다.</li>
+        </ol>
+        <p class="fine">연애점: 포기한다 → 친구 → 싫어한다 → 좋아한다 → 아주 좋아한다<br>소원점: 포기한다 → 아직 때가 아니다 → 이루어질 수 없다 → 가능성이 있다 → 가능성이 매우 높다</p>
+      </article>
+      <article class="spread-entry">
+        <h4>피라미드 <span>운 시험하기</span></h4>
+        <p>위로 갈수록 좁아지는 삼각형으로 28장을 앞면으로 쌓습니다. 맨 위 한 장, 다음 줄 두 장… 일곱째 줄 일곱 장. 남은 24장은 손에 듭니다.</p>
+        <ol>
+          <li>위아래로 맞닿은 두 장의 숫자 합이 13이면 치웁니다. (A=1, J=11, Q=12)</li>
+          <li>K는 혼자서 13이므로 한 장만으로 치웁니다.</li>
+          <li>더 치울 것이 없으면 빈자리를 손의 카드로 채웁니다. 언제나 위에서 아래로 채웁니다.</li>
+          <li>더는 치울 수 없을 때 손에 남은 카드가 0장이면 아주 좋은 운, 1~3장이면 가능성 있음, 4장 이상이면 아직 때가 아님으로 읽습니다.</li>
+        </ol>
+        <p class="fine">몬테카를로보다 어려운 점이라, 손의 카드를 다 쓰는 일은 열 번에 한 번 남짓입니다.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="library" id="library">
+    <h2>카드 도감</h2>
+    <p class="section-lead">하트부터 스페이드까지 52장과 조커. 카드를 눌러 연애·일·조언 풀이를 펼쳐 보세요.</p>
+    <div class="filters" id="filters" role="group" aria-label="무늬별로 보기">
+      <button type="button" class="chip is-on" data-suit="all" aria-pressed="true">전체</button>
+      <button type="button" class="chip" data-suit="H" aria-pressed="false"><i class="red">♥</i> 하트</button>
+      <button type="button" class="chip" data-suit="D" aria-pressed="false"><i class="red">♦</i> 다이아몬드</button>
+      <button type="button" class="chip" data-suit="C" aria-pressed="false"><i>♣</i> 클럽</button>
+      <button type="button" class="chip" data-suit="S" aria-pressed="false"><i>♠</i> 스페이드</button>
+    </div>
+    <div class="suit-books" id="suitBooks"></div>
+  </section>
+
+  <section class="prose" id="guide">
+    <h2>트럼프 카드를 읽는 법</h2>
+    <p class="section-lead">트럼프 카드점은 그림보다 무늬와 숫자로 읽습니다. 네 가지 무늬와 열세 개의 숫자만 알면 어느 카드든 뜻을 짐작할 수 있습니다.</p>
+
+    <div class="suit-guide" id="suitGuide"></div>
+
+    <h3 class="book-sub">숫자가 말하는 것</h3>
+    <dl class="rank-guide" id="rankGuide"></dl>
+
+    <ol class="guide-steps">
+      <li>
+        <h3>색으로 먼저 봅니다</h3>
+        <p>빨간 무늬(하트·다이아몬드)가 많으면 흐름이 밝고, 검은 무늬(클럽·스페이드)가 많으면 노력이나 조심이 필요합니다. 예/아니오 점도 이 색을 기준으로 삼습니다.</p>
+        <p>다만 클럽은 검은 무늬지만 성공과 협력의 카드가 많아, 스페이드만큼 무겁게 읽지 않습니다.</p>
+      </li>
+      <li>
+        <h3>그림 카드는 사람입니다</h3>
+        <p>J·Q·K는 대개 실제 사람을 가리킵니다. J는 젊은이나 친구, Q는 여성, K는 남성입니다. 무늬가 그 사람의 성격을 말해 줍니다. 하트 K는 마음 넓은 남성, 스페이드 Q는 냉철한 여성입니다.</p>
+        <p>질문자와 같은 성별의 Q·K가 나오면 질문자 자신으로 읽기도 합니다.</p>
+      </li>
+      <li>
+        <h3>같은 숫자가 겹치면 뜻이 커집니다</h3>
+        <p>한 번에 같은 숫자가 두 장, 세 장, 네 장 나오면 그 숫자의 뜻이 강하게 드러납니다. 예를 들어 9가 세 장이면 몸과 마음이 안정을 되찾고, A가 네 장이면 삶의 판을 바꿀 큰 일이 다가옵니다.</p>
+        <p>뽑은 카드에 같은 숫자가 있으면 ‘함께 읽기’에서 그 뜻을 알려 드립니다.</p>
+      </li>
+      <li>
+        <h3>섞기와 컷</h3>
+        <p>전통적으로는 시계를 옆에 두고 1분 동안 카드를 섞은 뒤, 덱을 내려놓고 컷을 합니다. 섞는 동안 질문을 마음에 담아 두세요. 카드를 섞는 방식에는 정답이 없습니다. 나에게 편한 방법이면 됩니다.</p>
+        <p>이 사이트에서는 카드를 섞은 뒤 세 더미 가운데 하나를 골라 맨 위로 올리는 것으로 컷을 대신합니다.</p>
+      </li>
+      <li>
+        <h3>보통은 조커를 뺍니다</h3>
+        <p>카드점은 대개 조커를 뺀 52장으로 봅니다. 몬테카를로·피라미드·일주일 운세는 늘 52장으로 합니다. 일반 배열에서는 원하면 조커 한 장을 넣을 수 있고, 조커가 나오면 ‘판을 바꾸는 뜻밖의 변수’로 읽습니다.</p>
+      </li>
+    </ol>
+
+    <ul class="cautions">
+      <li><strong>카드는 참고입니다.</strong>풀이는 지금의 흐름을 비춰 줄 뿐, 결정과 책임은 언제나 내 몫입니다.</li>
+      <li><strong>건강·법률·돈 문제는 전문가에게.</strong>스페이드 카드는 살펴보라는 신호이지 진단이나 판결이 아닙니다.</li>
+      <li><strong>같은 질문을 되풀이해 뽑지 마세요.</strong>마음에 드는 답이 나올 때까지 뽑으면 어떤 답도 믿을 수 없게 됩니다.</li>
+    </ul>
+  </section>
+
+  <section class="prose" id="about">
+    <h2>카드 이야기</h2>
+    <p class="section-lead">우리가 ‘트럼프’라고 부르는 카드는 영어로 플레잉 카드(playing cards)입니다. ‘트럼프(trump)’는 원래 다른 무늬를 이기는 으뜸패를 뜻하는 말이었는데, 일본을 거쳐 들어오며 카드 전체의 이름이 되었습니다.</p>
+
+    <div class="about-grid">
+      <article>
+        <h3>유럽으로 건너온 카드</h3>
+        <p>카드는 14세기 후반 유럽에 나타났습니다. 이슬람 세계에서 건너온 것으로 보이며, 처음에는 컵·동전·칼·막대 같은 무늬를 썼습니다. 이 네 무늬는 지금 타로의 마이너 아르카나에도 남아 있습니다.</p>
+      </article>
+      <article>
+        <h3>하트·다이아·클럽·스페이드</h3>
+        <p>오늘날 익숙한 네 무늬는 15세기 프랑스에서 자리 잡았습니다. 찍어 내기 쉬운 단순한 모양 덕분에 널리 퍼졌고, 영국을 거쳐 세계의 표준이 되었습니다.</p>
+      </article>
+      <article>
+        <h3>카드로 점을 치다</h3>
+        <p>카드로 점을 보는 일을 카토만시(cartomancy)라고 합니다. 18세기 유럽에서는 이미 일반 카드로 운세를 보는 방법이 책으로 나왔고, 32장으로 줄인 덱을 쓰는 방식도 함께 퍼졌습니다.</p>
+      </article>
+      <article>
+        <h3>달력을 닮은 덱</h3>
+        <p>52장은 1년 52주, 네 무늬는 네 계절, 한 무늬의 13장은 한 계절의 13주를 닮았다는 이야기가 전합니다. 숫자를 모두 더하면 364, 조커를 하나 더하면 365가 됩니다. 처음부터 그렇게 만든 것인지는 알 수 없지만, 카드점에서 즐겨 쓰는 해석입니다.</p>
+      </article>
+      <article>
+        <h3>타로와의 관계</h3>
+        <p>하트는 타로의 컵, 다이아몬드는 펜타클, 클럽은 완드, 스페이드는 소드에 견주어 읽습니다. 그래서 트럼프 카드점은 메이저 아르카나가 빠진 타로처럼 다루어지기도 합니다.</p>
+      </article>
+      <article>
+        <h3>이 사이트의 카드</h3>
+        <p>카드 그림은 전통 트럼프의 짜임을 따라 이 사이트를 위해 새로 그렸습니다. 그림 카드의 인물은 위아래가 똑같은 양두 그림으로, 스페이드 A에는 MoonHong의 초승달을 넣었습니다.</p>
+      </article>
+    </div>
+
+    <p class="fine">카드의 기원과 연도는 자료마다 조금씩 다릅니다. 카드의 뜻도 해설서마다 차이가 있어, 여기서는 널리 쓰이는 뜻을 바탕으로 새로 정리했습니다. 배열법은 『쉽게 보는 트럼프 카드점』(이츠팀)에 소개된 방식을 참고했습니다.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>카드 그림은 이 사이트를 위해 새로 그린 것입니다. 풀이는 참고용입니다.</p>
+  <p class="copy">© 2026 월홍 (MoonHong). All rights reserved.</p>
+</footer>
+
+<dialog class="card-dialog" id="cardDialog" aria-labelledby="dialogTitle">
+  <button type="button" class="dialog-close" id="dialogClose" aria-label="닫기">×</button>
+  <div id="dialogBody"></div>
+</dialog>
+
+<script src="cards.js?v=2"></script>
+<script src="art.js?v=2"></script>
+<script src="app.js?v=2"></script>
+</body>
+</html>
