@@ -1,0 +1,637 @@
+{
+  "deck": "트럼프 카드",
+  "deckId": "trump",
+  "site": "https://moonhong1164.github.io/MoonHongTRUMP/",
+  "count": 53,
+  "cards": [
+    {
+      "id": "H1",
+      "name": "하트 A",
+      "image": null,
+      "keywords": [
+        "사랑",
+        "가정",
+        "기쁜 시작"
+      ],
+      "meaning": "마음의 집에 불이 켜집니다",
+      "link": null
+    },
+    {
+      "id": "H2",
+      "name": "하트 2",
+      "image": null,
+      "keywords": [
+        "짝",
+        "약속",
+        "동반자"
+      ],
+      "meaning": "두 마음이 나란히 섭니다",
+      "link": null
+    },
+    {
+      "id": "H3",
+      "name": "하트 3",
+      "image": null,
+      "keywords": [
+        "설렘",
+        "선택",
+        "망설임"
+      ],
+      "meaning": "좋은 마음이 여러 갈래로",
+      "link": null
+    },
+    {
+      "id": "H4",
+      "name": "하트 4",
+      "image": null,
+      "keywords": [
+        "변화",
+        "이동",
+        "새 환경"
+      ],
+      "meaning": "익숙한 자리를 떠날 때",
+      "link": null
+    },
+    {
+      "id": "H5",
+      "name": "하트 5",
+      "image": null,
+      "keywords": [
+        "질투",
+        "오해",
+        "뒷말"
+      ],
+      "meaning": "시샘의 그림자",
+      "link": null
+    },
+    {
+      "id": "H6",
+      "name": "하트 6",
+      "image": null,
+      "keywords": [
+        "뜻밖의 행운",
+        "옛 인연",
+        "호의"
+      ],
+      "meaning": "생각지 않은 선물 같은 사람",
+      "link": null
+    },
+    {
+      "id": "H7",
+      "name": "하트 7",
+      "image": null,
+      "keywords": [
+        "짝사랑",
+        "변덕",
+        "불확실"
+      ],
+      "meaning": "손에 잡히지 않는 마음",
+      "link": null
+    },
+    {
+      "id": "H8",
+      "name": "하트 8",
+      "image": null,
+      "keywords": [
+        "초대",
+        "선물",
+        "모임"
+      ],
+      "meaning": "문이 열리고 사람이 모입니다",
+      "link": null
+    },
+    {
+      "id": "H9",
+      "name": "하트 9",
+      "image": null,
+      "keywords": [
+        "소원 성취",
+        "바람이 닿음"
+      ],
+      "meaning": "소원의 카드",
+      "link": null
+    },
+    {
+      "id": "H10",
+      "name": "하트 10",
+      "image": null,
+      "keywords": [
+        "행복",
+        "성공",
+        "좋은 끝"
+      ],
+      "meaning": "고생 끝의 큰 웃음",
+      "link": null
+    },
+    {
+      "id": "H11",
+      "name": "하트 J",
+      "image": null,
+      "keywords": [
+        "다정한 젊은이",
+        "친구",
+        "공감"
+      ],
+      "meaning": "누구와도 어울리는 따뜻한 사람",
+      "link": null
+    },
+    {
+      "id": "H12",
+      "name": "하트 Q",
+      "image": null,
+      "keywords": [
+        "다정한 여성",
+        "돌봄",
+        "너그러움"
+      ],
+      "meaning": "어머니 같은 손길",
+      "link": null
+    },
+    {
+      "id": "H13",
+      "name": "하트 K",
+      "image": null,
+      "keywords": [
+        "너그러운 남성",
+        "조언자",
+        "진심"
+      ],
+      "meaning": "말없이 돕는 사람",
+      "link": null
+    },
+    {
+      "id": "D1",
+      "name": "다이아몬드 A",
+      "image": null,
+      "keywords": [
+        "소식",
+        "편지",
+        "돈의 시작"
+      ],
+      "meaning": "반짝이는 첫 소식",
+      "link": null
+    },
+    {
+      "id": "D2",
+      "name": "다이아몬드 2",
+      "image": null,
+      "keywords": [
+        "연락",
+        "작은 거래",
+        "뜻밖"
+      ],
+      "meaning": "뜻밖의 연락",
+      "link": null
+    },
+    {
+      "id": "D3",
+      "name": "다이아몬드 3",
+      "image": null,
+      "keywords": [
+        "계약",
+        "서류",
+        "말다툼"
+      ],
+      "meaning": "서류 위의 약속",
+      "link": null
+    },
+    {
+      "id": "D4",
+      "name": "다이아몬드 4",
+      "image": null,
+      "keywords": [
+        "저축",
+        "유산",
+        "안정"
+      ],
+      "meaning": "단단히 쌓아 둔 곳간",
+      "link": null
+    },
+    {
+      "id": "D5",
+      "name": "다이아몬드 5",
+      "image": null,
+      "keywords": [
+        "번창",
+        "좋은 사업",
+        "성과"
+      ],
+      "meaning": "손대는 일이 불어납니다",
+      "link": null
+    },
+    {
+      "id": "D6",
+      "name": "다이아몬드 6",
+      "image": null,
+      "keywords": [
+        "정리",
+        "주고받음",
+        "재검토"
+      ],
+      "meaning": "저울 위의 관계",
+      "link": null
+    },
+    {
+      "id": "D7",
+      "name": "다이아몬드 7",
+      "image": null,
+      "keywords": [
+        "헛소문",
+        "작은 손실",
+        "낭비"
+      ],
+      "meaning": "새는 주머니",
+      "link": null
+    },
+    {
+      "id": "D8",
+      "name": "다이아몬드 8",
+      "image": null,
+      "keywords": [
+        "짧은 여행",
+        "늦은 결실",
+        "배움"
+      ],
+      "meaning": "천천히 익는 열매",
+      "link": null
+    },
+    {
+      "id": "D9",
+      "name": "다이아몬드 9",
+      "image": null,
+      "keywords": [
+        "새 기회",
+        "놀라운 돈",
+        "계획 변경"
+      ],
+      "meaning": "방향을 바꾸면 길이 납니다",
+      "link": null
+    },
+    {
+      "id": "D10",
+      "name": "다이아몬드 10",
+      "image": null,
+      "keywords": [
+        "큰 재물",
+        "성공",
+        "형편의 변화"
+      ],
+      "meaning": "가득 찬 금고",
+      "link": null
+    },
+    {
+      "id": "D11",
+      "name": "다이아몬드 J",
+      "image": null,
+      "keywords": [
+        "소식 전하는 사람",
+        "실속"
+      ],
+      "meaning": "소식을 들고 오는 젊은이",
+      "link": null
+    },
+    {
+      "id": "D12",
+      "name": "다이아몬드 Q",
+      "image": null,
+      "keywords": [
+        "사교적인 여성",
+        "말솜씨",
+        "화제"
+      ],
+      "meaning": "말이 빠른 사람",
+      "link": null
+    },
+    {
+      "id": "D13",
+      "name": "다이아몬드 K",
+      "image": null,
+      "keywords": [
+        "사업가",
+        "결단력",
+        "재력"
+      ],
+      "meaning": "결단이 빠른 사람",
+      "link": null
+    },
+    {
+      "id": "C1",
+      "name": "클럽 A",
+      "image": null,
+      "keywords": [
+        "성공의 씨앗",
+        "좋은 기회"
+      ],
+      "meaning": "막 돋아난 새싹",
+      "link": null
+    },
+    {
+      "id": "C2",
+      "name": "클럽 2",
+      "image": null,
+      "keywords": [
+        "반대",
+        "실망",
+        "엇갈림"
+      ],
+      "meaning": "엇갈린 두 갈래",
+      "link": null
+    },
+    {
+      "id": "C3",
+      "name": "클럽 3",
+      "image": null,
+      "keywords": [
+        "협력",
+        "두 번째 기회",
+        "결실"
+      ],
+      "meaning": "다시 찾아온 기회",
+      "link": null
+    },
+    {
+      "id": "C4",
+      "name": "클럽 4",
+      "image": null,
+      "keywords": [
+        "배신 조심",
+        "흔들림",
+        "경고"
+      ],
+      "meaning": "기울어진 탁자",
+      "link": null
+    },
+    {
+      "id": "C5",
+      "name": "클럽 5",
+      "image": null,
+      "keywords": [
+        "새 친구",
+        "도움",
+        "인맥"
+      ],
+      "meaning": "새로 만난 든든한 손",
+      "link": null
+    },
+    {
+      "id": "C6",
+      "name": "클럽 6",
+      "image": null,
+      "keywords": [
+        "도움",
+        "후원",
+        "순조로운 일"
+      ],
+      "meaning": "받쳐 주는 손",
+      "link": null
+    },
+    {
+      "id": "C7",
+      "name": "클럽 7",
+      "image": null,
+      "keywords": [
+        "번영",
+        "성과",
+        "유혹 조심"
+      ],
+      "meaning": "열매 사이의 가시",
+      "link": null
+    },
+    {
+      "id": "C8",
+      "name": "클럽 8",
+      "image": null,
+      "keywords": [
+        "조급함",
+        "질투",
+        "성급한 결정"
+      ],
+      "meaning": "서두르다 넘어지는 발",
+      "link": null
+    },
+    {
+      "id": "C9",
+      "name": "클럽 9",
+      "image": null,
+      "keywords": [
+        "뜻밖의 기회",
+        "고집 주의"
+      ],
+      "meaning": "고집을 내려놓으면 열리는 문",
+      "link": null
+    },
+    {
+      "id": "C10",
+      "name": "클럽 10",
+      "image": null,
+      "keywords": [
+        "행운",
+        "먼 여행",
+        "뜻밖의 돈"
+      ],
+      "meaning": "멀리서 온 행운",
+      "link": null
+    },
+    {
+      "id": "C11",
+      "name": "클럽 J",
+      "image": null,
+      "keywords": [
+        "믿음직한 친구",
+        "열정"
+      ],
+      "meaning": "곁을 지키는 친구",
+      "link": null
+    },
+    {
+      "id": "C12",
+      "name": "클럽 Q",
+      "image": null,
+      "keywords": [
+        "자신감 있는 여성",
+        "매력",
+        "실력"
+      ],
+      "meaning": "당당한 사람",
+      "link": null
+    },
+    {
+      "id": "C13",
+      "name": "클럽 K",
+      "image": null,
+      "keywords": [
+        "정직한 남성",
+        "너그러운 리더"
+      ],
+      "meaning": "믿음직한 지도자",
+      "link": null
+    },
+    {
+      "id": "S1",
+      "name": "스페이드 A",
+      "image": null,
+      "keywords": [
+        "큰 변화",
+        "끝맺음",
+        "결단"
+      ],
+      "meaning": "한 시대가 닫힐 때",
+      "link": null
+    },
+    {
+      "id": "S2",
+      "name": "스페이드 2",
+      "image": null,
+      "keywords": [
+        "갈라섬",
+        "어려운 결정",
+        "긴장"
+      ],
+      "meaning": "칼끝이 두 갈래로",
+      "link": null
+    },
+    {
+      "id": "S3",
+      "name": "스페이드 3",
+      "image": null,
+      "keywords": [
+        "상처",
+        "삼각관계",
+        "눈물"
+      ],
+      "meaning": "마음을 찌르는 가시",
+      "link": null
+    },
+    {
+      "id": "S4",
+      "name": "스페이드 4",
+      "image": null,
+      "keywords": [
+        "휴식",
+        "회복",
+        "잠깐 멈춤"
+      ],
+      "meaning": "쉬어 가는 의자",
+      "link": null
+    },
+    {
+      "id": "S5",
+      "name": "스페이드 5",
+      "image": null,
+      "keywords": [
+        "장애물",
+        "방해",
+        "고비"
+      ],
+      "meaning": "길 위의 돌",
+      "link": null
+    },
+    {
+      "id": "S6",
+      "name": "스페이드 6",
+      "image": null,
+      "keywords": [
+        "작은 개선",
+        "이동",
+        "조금씩 나아짐"
+      ],
+      "meaning": "잔잔해지는 물결",
+      "link": null
+    },
+    {
+      "id": "S7",
+      "name": "스페이드 7",
+      "image": null,
+      "keywords": [
+        "실망",
+        "손해",
+        "남의 말"
+      ],
+      "meaning": "맞지 않는 조언",
+      "link": null
+    },
+    {
+      "id": "S8",
+      "name": "스페이드 8",
+      "image": null,
+      "keywords": [
+        "유혹",
+        "함정",
+        "답답함"
+      ],
+      "meaning": "묶인 손",
+      "link": null
+    },
+    {
+      "id": "S9",
+      "name": "스페이드 9",
+      "image": null,
+      "keywords": [
+        "불운",
+        "걱정",
+        "잠 못 드는 밤"
+      ],
+      "meaning": "가장 깊은 밤",
+      "link": null
+    },
+    {
+      "id": "S10",
+      "name": "스페이드 10",
+      "image": null,
+      "keywords": [
+        "근심",
+        "나쁜 소식",
+        "끝자락"
+      ],
+      "meaning": "어둠의 끝자락",
+      "link": null
+    },
+    {
+      "id": "S11",
+      "name": "스페이드 J",
+      "image": null,
+      "keywords": [
+        "시샘하는 사람",
+        "경계"
+      ],
+      "meaning": "그림자 속의 젊은이",
+      "link": null
+    },
+    {
+      "id": "S12",
+      "name": "스페이드 Q",
+      "image": null,
+      "keywords": [
+        "홀로 선 여성",
+        "냉철",
+        "독립"
+      ],
+      "meaning": "혼자 서 본 사람",
+      "link": null
+    },
+    {
+      "id": "S13",
+      "name": "스페이드 K",
+      "image": null,
+      "keywords": [
+        "권위",
+        "법",
+        "엄격한 판단"
+      ],
+      "meaning": "판결을 내리는 사람",
+      "link": null
+    },
+    {
+      "id": "JK",
+      "name": "조커",
+      "image": null,
+      "keywords": [
+        "뜻밖의 변수",
+        "자유",
+        "새 판"
+      ],
+      "meaning": "판을 바꾸는 카드",
+      "link": null
+    }
+  ]
+}
